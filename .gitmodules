@@ -1,0 +1,3 @@
+[submodule "distributed/python_sockets"]
+	path = distributed/python_sockets
+	url = https://github.com/ageapps/python_sockets
