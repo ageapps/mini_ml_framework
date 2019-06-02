@@ -1,5 +1,8 @@
 import sys
-from python_sockets.server import UDPRServer
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
+
+from python_sockets.server import UDPServer
 from python_sockets.protocol import FragmentProtocol
 from python_sockets.protocol import code
 
@@ -9,9 +12,9 @@ UDP_SERVER = True
 HEADER_SIZE = 20
 
 learning_parameters = {
-    'iterations': 100,
+    'iterations': 20,
     'eta': 0.001,
-    'input_size': 1000,
+    'input_size': 200,
     'output_size': 1
 }
 
@@ -21,6 +24,14 @@ STATE_INITIAL = 'initial'
 STATE_LEARNING = 'learning'
 STATE_FINISHED = 'finished'
 
+
+def get_formated_message( msg, key='', code=0):
+    msg = {
+        'data': msg,
+        'key': key,
+        'code': code
+        }
+    return msg
 
 def aggregate_values(params, new_values):
     if len(params) == 0:
@@ -38,16 +49,16 @@ def aggregate_values(params, new_values):
 
 
 def send_error(server, destination):
-    server.send_message('', destination, code=code.CODE_ERROR)
+    server.send_message(get_formated_message('', code=code.CODE_ERROR), destination)
 
 
 def send_ack(server, destination):
-    server.send_message('', destination, code=code.CODE_OK)
+    server.send_message(get_formated_message('', code=code.CODE_OK), destination)
 
 
 def main():
     proto = FragmentProtocol()
-    server = UDPRServer(PORT, protocol=proto)
+    server = UDPServer(PORT, protocol=proto)
     server.start()
     current_status = STATE_INITIAL
     workers = []
@@ -70,8 +81,8 @@ def main():
                 print('Registering worker: {}'.format(client_address))
                 workers.append(client_address)
                 print('Sending parameters')
-                server.send_message(
-                    learning_parameters, client_address, key=current_status, code=code.CODE_OK)
+                msg = get_formated_message(learning_parameters, current_status, code.CODE_OK)
+                server.send_message(msg, client_address)
             else:
                 print('Worker {} is already registered'.format(client_address))
                 send_error(server, client_address)
@@ -109,9 +120,9 @@ def main():
                 print('Next step')
                 current_step += 1
                 print('Sending parameters to workers')
+                msg = get_formated_message(cached_params, current_status, code.CODE_OK)
                 for w in workers:
-                    server.send_message(
-                    cached_params, w, key=current_status, code=code.CODE_OK)
+                    server.send_message(msg, w)
                 workers = []
                 if current_step == learning_parameters['iterations']:
                     print("Finished")

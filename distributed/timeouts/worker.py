@@ -2,13 +2,15 @@ import time
 import sys, os
 import math
 
-from python_sockets.client import Client
-from python_sockets.protocol import FragmentProtocol
-from python_sockets.protocol import code
 import matplotlib.pyplot as plt
 import numpy as np
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
+from python_sockets.client import Client
+from python_sockets.protocol import FragmentProtocol
+from python_sockets.protocol import code
+
 from modules import Linear, LossMSE, ReLu, Tanh, Sequential
 from modules.trainer import trainBatchGD, trainGD
 from modules.helpers import *
@@ -57,8 +59,15 @@ def on_params_update(params, step):
               'params': w,
               'step': step
           }
-          answer = socket_adapter.send_message(get_formated_message(agg_msg, STATE_LEARNING), wait_answer=True)
-          print('Got answer: ', answer)
+          for t in range(10):
+            answer = socket_adapter.send_message(get_formated_message(agg_msg, STATE_LEARNING), wait_answer=True)
+            print('Got answer: ', answer)
+            if answer['code'] != code.CODE_OK:
+                print('trying again...')
+                time.sleep(0.1)
+            else:
+              break
+
           if answer['code'] != code.CODE_OK:
               raise Exception('Error on answer')
           # receive aggregated
