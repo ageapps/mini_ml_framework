@@ -5,6 +5,9 @@
 
 # In[2]:
 
+import sys
+import os
+sys.path.append("../")
 
 import matplotlib.pyplot as plt
 import numpy as np
