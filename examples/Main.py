@@ -13,7 +13,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 from modules import Linear, LossMSE, ReLu, Tanh, Sequential
-from helpers import *
+from modules.helpers import *
+from modules.trainer import trainBatchGD, trainGD
 
 
 # ## Single Layer
