@@ -29,7 +29,6 @@ def plotCostAndData(model,X,Y,cost, fig_name=False):
         cost_ax.legend()
 
         if plotOutput:
-            print("Ploting")
             pred = model.forward(X)
             # Plot original data
             _ = ax[1].plot(X, Y, 'b.', label="Input")

@@ -1,13 +1,13 @@
 import numpy as np
-
+from .logger import log
 
 def trainGD(model, optim, X, Y, iterations, v=False, eta=0.01, update_func=None):
     cost_history = []
 
     if v:
-        print('Number of params in model:',len(model.param()))
-        print('Params in model')
-        print(model.param())
+        log.info('Number of params in model:',len(model.param()))
+        log.info('Params in model')
+        log.info(model.param())
 
     for i in range(iterations):
         # forward pass, get prediction
@@ -36,9 +36,9 @@ def trainGD(model, optim, X, Y, iterations, v=False, eta=0.01, update_func=None)
 
         assert len(model.param()) == len(updates),('Lengths are not the same,params',len(model.param()), 'updates', len(updates))
         if v:
-            print('Iter: {} Cost:{}'.format(i,cost_history[i]))
+            log.info('Iter: {} Cost:{}'.format(i,cost_history[i]))
         elif i%10==0:
-            print('Iter: {} Cost:{}'.format(i,cost_history[i]))
+            log.info('Iter: {} Cost:{}'.format(i,cost_history[i]))
         
         if update_func is not None:
             updates = update_func(updates, i)
@@ -54,9 +54,9 @@ def trainBatchGD(model, optim, X, Y, iterations, batch_size=5, v=False, eta=0.01
     cost_history = []
 
     if v:
-        print('Number of params in model:',len(model.param()))
-        print('Params in model')
-        print(model.param())
+        log.info('Number of params in model:',len(model.param()))
+        log.info('Params in model')
+        log.info(model.param())
         
     for i in range(iterations):
         cost = 0.0
@@ -81,9 +81,9 @@ def trainBatchGD(model, optim, X, Y, iterations, batch_size=5, v=False, eta=0.01
                 dw = param[1]
                 new_w = w - eta*dw
                 if v:
-                    print('w:', w)
-                    print('dw:', dw)
-                    print('new_w:', new_w)
+                    log.info('w:', w)
+                    log.info('dw:', dw)
+                    log.info('new_w:', new_w)
                     
                 updates.append(new_w)  
                 
@@ -95,9 +95,9 @@ def trainBatchGD(model, optim, X, Y, iterations, batch_size=5, v=False, eta=0.01
         model.update(updates)
         cost_history.append(cost)
         if v:
-            print('Iter: {} Cost:{}'.format(i,cost_history[i]))
+            log.info('Iter: {} Cost:{}'.format(i,cost_history[i]))
         elif i%3==0:
-            print('Iter: {} Cost:{}'.format(i,cost_history[i]))
+            log.info('Iter: {} Cost:{}'.format(i,cost_history[i]))
 
 
     return cost_history
