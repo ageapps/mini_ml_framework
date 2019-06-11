@@ -21,7 +21,7 @@ QUEUE_SIZE = 5
 UDP_CLIENT = True
 HEADER_SIZE = 20
 
-STATE_INITIAL = 'initial'
+STATE_SETUP = 'initial'
 STATE_LEARNING = 'learning'
 STATE_FINISHED = 'finished'
 
@@ -84,7 +84,7 @@ def on_params_update(params, step):
     return params
 
 def main():
-  current_state = STATE_INITIAL
+  current_state = STATE_SETUP
   worker_name = 'worker'
   if len(sys.argv) > 1:
     worker_name = sys.argv[1]
