@@ -72,7 +72,7 @@ def on_params_update(params, step):
               raise Exception('Error on answer')
           # receive aggregated
           new_param =answer['data']
-          if len(new_param) == len(w):
+          if any(item != 0 for item in new_parameters) and len(new_parameters) >= len(w):
               for j, row in enumerate(param):
                 row[c] = new_param[j]  
 

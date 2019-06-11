@@ -121,7 +121,6 @@ def main():
                 print('Next step')
                 current_step += 1
                 print('Sending parameters to workers')
-                msg = get_formated_message(cached_params, current_status, code.CODE_OK)
                 workers = []
                 if current_step == learning_parameters['iterations']:
                     print("Finished")
