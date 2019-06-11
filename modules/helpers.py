@@ -8,7 +8,7 @@ import numpy as np
 # In[10]:
 
 
-def standarize(A):
+def standardize(A):
     return (A - np.mean(A, axis=0)) / np.std(A, axis=0)
 
 # In[14]

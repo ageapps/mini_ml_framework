@@ -12,10 +12,10 @@ sys.path.append("../")
 import matplotlib.pyplot as plt
 import numpy as np
 import math
-from modules import Linear, LossMSE, ReLu, Tanh, Sequential
-from modules.helpers import *
-from modules.trainer import trainBatchGD, trainGD
+from modules import Linear, LossMSE, ReLu, Tanh, Sequential, Trainer, LogManager
+from modules.helpers import standardize, plotCostAndData
 
+logger = LogManager.getLogger(__name__, False)
 
 # ## Single Layer
 
@@ -24,10 +24,11 @@ from modules.trainer import trainBatchGD, trainGD
 
 X = 2 * np.random.rand(100,1)
 Y = 4 +3*X+np.random.randn(100,1)
-X = standarize(X)
-Y = standarize(Y)
+X = standardize(X)
+Y = standardize(Y)
 model = Linear(X.shape[1],Y.shape[1])
 optim = LossMSE()
+trainer = Trainer(model, optim)
 eta = 0.001
 iterations = 100
 
@@ -35,7 +36,7 @@ iterations = 100
 # In[4]:
 
 
-cost = trainBatchGD(model,optim,X,Y,iterations, eta=eta)
+cost = trainer.trainBatchGD(X,Y,iterations, eta=eta)
 
 
 # In[5]:
@@ -91,6 +92,8 @@ class NN(object):
 
 nn = NN(X.shape[1],Y.shape[1])
 optim_nn = LossMSE()
+trainer = Trainer(nn, optim_nn)
+
 eta = 0.001
 iterations = 100
 
@@ -98,7 +101,7 @@ iterations = 100
 # In[10]:
 
 
-cost_nn = trainBatchGD(nn,optim,X,Y,iterations, eta=eta)
+cost_nn = trainer.trainBatchGD(X,Y,iterations, eta=eta)
 
 
 # In[11]:
@@ -116,11 +119,11 @@ N, D_in, H1,H2, D_out = 200, 1, 50, 50, 1
 
 X = 3 * np.random.rand(N,D_in)
 Y = 4*np.sin(X) + 0.5*np.random.randn(N,D_out)
-X = standarize(X)
-Y = standarize(Y)
+X = standardize(X)
+Y = standardize(Y)
 
-print("X", X.shape)
-print("Y", Y.shape)
+logger.info("X: "+str(X.shape))
+logger.info("Y: "+str(Y.shape))
 
 
 # In[14]:
@@ -131,7 +134,6 @@ class NN2(object):
         self.fc1 = Linear(in_layer_size,hidden_layer_size)
         self.ac1 = ReLu()
         self.fc2 = Linear(hidden_layer_size,out_layer_size)
-        #self.ac2 = Tanh()
 
         
     def forward(self, x):
@@ -167,6 +169,7 @@ class NN2(object):
 
 nn = NN2(X.shape[1],30,Y.shape[1])
 optim_nn = LossMSE()
+trainer = Trainer(nn, optim_nn)
 iterations = 200
 eta = 0.0001
 
@@ -174,12 +177,7 @@ eta = 0.0001
 # In[16]:
 
 
-cost_nn = trainBatchGD(nn,optim,X,Y,iterations, eta=eta)
-
-
-# In[17]:
-
-
+cost_nn = trainer.trainBatchGD(X,Y,iterations, eta=eta)
 plotCostAndData(nn,X,Y,cost_nn)
 
 
@@ -197,6 +195,7 @@ nn_seq = Sequential(
 )
 
 optim_nn = LossMSE()
+trainer = Trainer(nn_seq, optim_nn)
 iterations = 300
 eta = 0.0008
 nn_seq.modules
@@ -205,12 +204,7 @@ nn_seq.modules
 # In[19]:
 
 
-cost_nn_seq = trainBatchGD(nn_seq,optim_nn,X,Y, iterations, eta=eta)
-
-
-# In[21]:
-
-
+cost_nn_seq = trainer.trainBatchGD(X,Y, iterations, eta=eta)
 plotCostAndData(nn_seq,X,Y,cost_nn_seq)
 
 
@@ -243,8 +237,8 @@ inp_train, target_train  = generate_disc_set(nb)
 inp_test, target_test  = generate_disc_set(nb)
 
 # Standardizing the data
-inp_train = standarize(inp_train);
-inp_test = standarize(inp_test);
+inp_train = standardize(inp_train);
+inp_test = standardize(inp_test);
 
 
 # In[250]:
@@ -272,10 +266,11 @@ nn_test = Sequential(
 )
 
 optim_nn = LossMSE()
+trainer = Trainer(nn_test, optim_nn)
 iterations = 200
 eta = 0.00005
 batch_size = 50
-cost_nn_seq = trainBatchGD(nn_test, optim_nn, inp_train, target_train, iterations, eta=eta, batch_size=batch_size)
+cost_nn_seq = trainer.trainBatchGD(inp_train, target_train, iterations, eta=eta, batch_size=batch_size)
 plotCostAndData(nn_test,inp_train,target_train,cost_nn_seq)
 
 

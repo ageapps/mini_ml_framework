@@ -104,8 +104,8 @@ def main():
 
   print('Learning parameters are: {}'.format(learning_parameters))
   x,y = generate_data(input_size, output_size)
-  X = standarize(x)
-  Y = standarize(y)
+  X = standardize(x)
+  Y = standardize(y)
   model = Linear(X.shape[1],Y.shape[1])
   optim = LossMSE()
   

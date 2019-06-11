@@ -8,14 +8,16 @@
 
 import numpy as np
 import math
+from . import LogManager
 
 class LossMSE(object):
-    def __init__(self):
+    def __init__(self, debug=False):
         self.y_t = np.array([])
         self.y_p = np.array([])
         self.L = np.array([])
         self.dL_dy = np.array([])
         self.m = 1
+        self.logger = LogManager.getLogger(__name__, debug)
 
     def cost(self, predicted, target):
         """
@@ -27,6 +29,7 @@ class LossMSE(object):
         self.y_t = target
         self.y_p = predicted
         self.L = (1/(2*self.m))*np.sum(np.square(self.y_p-self.y_t))
+        self.logger.debug('Cost | L:', self.L)
         return self.L
     
       
@@ -36,6 +39,7 @@ class LossMSE(object):
         """ 
         
         self.dL_dy = (1/self.m)*(self.y_p-self.y_t)
+        self.logger.debug('Backward | dL_dy:', self.dL_dy)
         return self.dL_dy
     
     

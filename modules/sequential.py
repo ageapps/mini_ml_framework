@@ -1,13 +1,16 @@
 import numpy
-
+from . import LogManager
 
 class Sequential(object):
-    def __init__(self, *args):
+    def __init__(self, *args, debug=False):
         self.modules = {}
         for idx, module in enumerate(args):
             self.modules.update({idx: module})
-        #print("Model with:", len(self.modules), "layers")
-            
+        
+        self.logger = LogManager.getLogger(__name__, debug)
+        self.logger.debug("Model with:", len(self.modules), "layers")
+
+
     def forward (self, x):
         """
         input is x
@@ -41,9 +44,6 @@ class Sequential(object):
             if len(param) > 1:
                 # only update if module has params
                 module.update([param])
-                
-        #print("W:",self.fc1.param()[0][0])
-        #print("dW:",self.fc1.param()[0][1])
     
     def param(self):
         '''

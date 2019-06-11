@@ -1,103 +1,112 @@
 import numpy as np
-from .logger import log
+from . import LogManager
 
-def trainGD(model, optim, X, Y, iterations, v=False, eta=0.01, update_func=None):
-    cost_history = []
+class Trainer(object):
+    def __init__(self, model, optimizer, debug=False):
+        self.model = model
+        self.optimizer = optimizer
+        self.logger = LogManager.getLogger(__name__, debug)
 
-    if v:
-        log.info('Number of params in model:',len(model.param()))
-        log.info('Params in model')
-        log.info(model.param())
+    def debug(self, content):
+        self.logger.debug(content)
+    
+    def info(self, content):
+        self.logger.info(content)
 
-    for i in range(iterations):
-        # forward pass, get prediction
-        y_pred = model.forward(X)
-        # calculate cost
-        cost_history.append(optim.cost(y_pred,Y))
-        # update weights, backward prop
-        updates = []
-        dL_dy = optim.backward()
-        model.backward(dL_dy)
-        for param in model.param():
-            if not param:
-                # empty param
-                updates.append([])
-                continue
-                
-            w = param[0]
-            dw = param[1]
-            new_w = w - eta*dw
-            if v:
-                print('w:', w)
-                print('dw:', dw)
-                print('new_w:', new_w)
+    def trainGD(self, X, Y, iterations, eta=0.01, update_func=None):
+        cost_history = []
 
-            updates.append(new_w)            
-
-        assert len(model.param()) == len(updates),('Lengths are not the same,params',len(model.param()), 'updates', len(updates))
-        if v:
-            log.info('Iter: {} Cost:{}'.format(i,cost_history[i]))
-        elif i%10==0:
-            log.info('Iter: {} Cost:{}'.format(i,cost_history[i]))
-        
-        if update_func is not None:
-            updates = update_func(updates, i)
-
-        model.update(updates)
-
-    return cost_history
-
-
-
-
-def trainBatchGD(model, optim, X, Y, iterations, batch_size=5, v=False, eta=0.01, update_func=None):
-    cost_history = []
-
-    if v:
-        log.info('Number of params in model:',len(model.param()))
-        log.info('Params in model')
-        log.info(model.param())
-        
-    for i in range(iterations):
-        cost = 0.0
-        for b in range(0,X.shape[0],batch_size):            
-            X_i = X[b:b+batch_size]
-            Y_i = Y[b:b+batch_size]
+        self.info('Training model with params:',len(self.model.param()))
+        self.debug('Params in model')
+        self.debug(self.model.param())
+        for i in range(iterations):
             # forward pass, get prediction
-            y_pred = model.forward(X_i)
+            y_pred = self.model.forward(X)
             # calculate cost
-            cost += optim.cost(y_pred,Y_i)
+            cost_history.append(self.optimizer.cost(y_pred,Y))
             # update weights, backward prop
             updates = []
-            dL_dy = optim.backward()
-            model.backward(dL_dy)
-            for param in model.param():
+            dL_dy = self.optimizer.backward()
+            self.model.backward(dL_dy)
+            for param in self.model.param():
                 if not param:
                     # empty param
                     updates.append([])
                     continue
-
+                    
                 w = param[0]
                 dw = param[1]
                 new_w = w - eta*dw
-                if v:
-                    log.info('w:', w)
-                    log.info('dw:', dw)
-                    log.info('new_w:', new_w)
+                self.debug('w:', w)
+                self.debug('dw:', dw)
+                self.debug('new_w:', new_w)
+
+                updates.append(new_w)            
+
+            assert len(self.model.param()) == len(updates),('Lengths are not the same,params',len(self.model.param()), 'updates', len(updates))
+            
+            if i%10==0:
+                self.info('Iter: {} Cost:{}'.format(i,cost_history[i]))
+            else:
+                self.debug('Iter: {} Cost:{}'.format(i,cost_history[i]))
+
+            
+            if update_func is not None:
+                updates = update_func(updates, i)
+
+            self.model.update(updates)
+
+        return cost_history
+
+
+
+
+    def trainBatchGD(self, X, Y, iterations, batch_size=5, eta=0.01, update_func=None):
+        cost_history = []
+
+        self.info('Training model with params: {}'.format(len(self.model.param())))
+        self.debug('Params in model')
+        self.debug(self.model.param())
+            
+        for i in range(iterations):
+            cost = 0.0
+            for b in range(0,X.shape[0],batch_size):            
+                X_i = X[b:b+batch_size]
+                Y_i = Y[b:b+batch_size]
+                # forward pass, get prediction
+                y_pred = self.model.forward(X_i)
+                # calculate cost
+                cost += self.optimizer.cost(y_pred,Y_i)
+                # update weights, backward prop
+                updates = []
+                dL_dy = self.optimizer.backward()
+                self.model.backward(dL_dy)
+                for param in self.model.param():
+                    if not param:
+                        # empty param
+                        updates.append([])
+                        continue
+
+                    w = param[0]
+                    dw = param[1]
+                    new_w = w - eta*dw
+                    self.debug('w:' + str(w))
+                    self.debug('dw:'+ str(dw))
+                    self.debug('new_w:' + str(new_w))
+                        
+                    updates.append(new_w)  
                     
-                updates.append(new_w)  
-                
-            assert len(model.param()) == len(updates),('Lengths are not the same,params',len(model.param()), 'updates', len(updates))
-            model.update(updates)
-        
-        if update_func is not None:
-            updates = update_func(updates, i)
-        model.update(updates)
-        cost_history.append(cost)
-        if v:
-            log.info('Iter: {} Cost:{}'.format(i,cost_history[i]))
-        elif i%3==0:
-            log.info('Iter: {} Cost:{}'.format(i,cost_history[i]))
+                assert len(self.model.param()) == len(updates),('Lengths are not the same,params',len(self.model.param()), 'updates', len(updates))
+                self.model.update(updates)
+            
+            if update_func is not None:
+                updates = update_func(updates, i)
+            self.model.update(updates)
+            cost_history.append(cost)
+            
+            if i%10==0:
+                self.info('Iter: {} Cost:{}'.format(i,cost_history[i]))
+            else:
+                self.debug('Iter: {} Cost:{}'.format(i,cost_history[i]))
 
-
-    return cost_history
+        return cost_history
