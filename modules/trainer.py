@@ -2,18 +2,20 @@ import numpy as np
 from . import LogManager
 
 class Trainer(object):
-    def __init__(self, model, optimizer, debug=False):
+    def __init__(self, model, optimizer, v=False, vv=False):
         self.model = model
         self.optimizer = optimizer
-        self.verbose = debug
-        self.logger = LogManager.getLogger(__name__, debug)
+        self.v = v
+        self.vv = vv
+        self.logger = LogManager.getLogger(__name__, vv)
 
     def debug(self, content):
-        if self.verbose:
+        if self.vv:
             self.logger.debug(content)
     
     def info(self, content):
-        self.logger.info(content)
+        if self.v:
+            self.logger.info(content)
 
     def trainGD(self, X, Y, iterations, eta=0.01, update_func=None):
         cost_history = []
@@ -39,7 +41,7 @@ class Trainer(object):
                 w = param[0]
                 dw = param[1]
                 new_w = w - eta*dw
-                if self.verbose:
+                if self.vv:
                     self.debug('w:' + str(w))
                     self.debug('dw:'+ str(dw))
                     self.debug('new_w:' + str(new_w))
@@ -50,7 +52,7 @@ class Trainer(object):
             
             if i%10==0:
                 self.info('Iter: {} Cost:{}'.format(i,cost_history[i]))
-            elif self.verbose:
+            elif self.vv:
                 self.debug('Iter: {} Cost:{}'.format(i,cost_history[i]))
 
             
@@ -93,7 +95,7 @@ class Trainer(object):
                     w = param[0]
                     dw = param[1]
                     new_w = w - eta*dw
-                    if self.verbose:
+                    if self.vv:
                         self.debug('w:' + str(w))
                         self.debug('dw:'+ str(dw))
                         self.debug('new_w:' + str(new_w))
@@ -110,7 +112,7 @@ class Trainer(object):
             
             if i%10==0:
                 self.info('Iter: {} Cost:{}'.format(i,cost_history[i]))
-            elif self.verbose:
+            elif self.vv:
                 self.debug('Iter: {} Cost:{}'.format(i,cost_history[i]))
 
         return cost_history
