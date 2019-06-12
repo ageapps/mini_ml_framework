@@ -18,7 +18,7 @@ learning_parameters = {
     'output_size': 1
 }
 
-worker_num = 3
+worker_num = 2
 
 STATE_SETUP = 'initial'
 STATE_LEARNING = 'learning'

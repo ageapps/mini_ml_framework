@@ -11,11 +11,10 @@ from python_sockets.client import Client
 from python_sockets.protocol import FragmentProtocol
 from python_sockets.protocol import code
 
-from modules import Linear, LossMSE, ReLu, Tanh, Sequential
-from modules.trainer import trainBatchGD, trainGD
+from modules import Linear, LossMSE, ReLu, Tanh, Sequential, Trainer
 from modules.helpers import *
 
-HOST = 'localhost'
+HOST = '127.0.0.1'
 PORT = 12344
 QUEUE_SIZE = 5
 UDP_CLIENT = True
@@ -108,7 +107,8 @@ def main():
   Y = standardize(y)
   model = Linear(X.shape[1],Y.shape[1])
   optim = LossMSE()
-  
+  trainer = Trainer(model, optim)
+
   while True:
     current_state = STATE_LEARNING
     print("Waiting to start learning")
@@ -120,7 +120,7 @@ def main():
     time.sleep(2)
 
 
-  cost = trainGD(model,optim,X,Y,iterations, eta=eta, update_func=on_params_update, v=False)
+  cost = trainer.trainGD(X,Y,iterations, eta=eta, update_func=on_params_update)
   plotCostAndData(model,X,Y,cost, fig_name=worker_name)
   # socket_adapter.send_message({ 'name': 'Time', 'time': time.time()})
 

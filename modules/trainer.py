@@ -18,7 +18,7 @@ class Trainer(object):
     def trainGD(self, X, Y, iterations, eta=0.01, update_func=None):
         cost_history = []
 
-        self.info('Training model with params:',len(self.model.param()))
+        self.info('Training model with params: ' + str(len(self.model.param())))
         self.debug('Params in model')
         self.debug(self.model.param())
         for i in range(iterations):
@@ -40,9 +40,9 @@ class Trainer(object):
                 dw = param[1]
                 new_w = w - eta*dw
                 if self.verbose:
-                    self.debug('w:', w)
-                    self.debug('dw:', dw)
-                    self.debug('new_w:', new_w)
+                    self.debug('w:' + str(w))
+                    self.debug('dw:'+ str(dw))
+                    self.debug('new_w:' + str(new_w))
 
                 updates.append(new_w)            
 
@@ -67,7 +67,7 @@ class Trainer(object):
     def trainBatchGD(self, X, Y, iterations, batch_size=5, eta=0.01, update_func=None):
         cost_history = []
 
-        self.info('Training model with params: {}'.format(len(self.model.param())))
+        self.info('Training model with params: ' + str(len(self.model.param())))
         self.debug('Params in model')
         self.debug(self.model.param())
             
