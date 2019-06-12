@@ -20,7 +20,7 @@ learning_parameters = {
 
 worker_num = 3
 
-STATE_INITIAL = 'initial'
+STATE_SETUP = 'initial'
 STATE_LEARNING = 'learning'
 STATE_FINISHED = 'finished'
 
@@ -60,7 +60,7 @@ def main():
     proto = FragmentProtocol()
     server = UDPServer(PORT, protocol=proto)
     server.start()
-    current_status = STATE_INITIAL
+    current_status = STATE_SETUP
     workers = []
     current_step = 0
     aggregated_params = []
@@ -75,7 +75,7 @@ def main():
             send_error(server, client_address)
             continue
 
-        if current_status == STATE_INITIAL:
+        if current_status == STATE_SETUP:
             # setup phase
             if client_address not in workers:
                 print('Registering worker: {}'.format(client_address))
