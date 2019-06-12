@@ -28,7 +28,7 @@ X = standardize(X)
 Y = standardize(Y)
 model = Linear(X.shape[1],Y.shape[1])
 optim = LossMSE()
-trainer = Trainer(model, optim)
+trainer = Trainer(model, optim, v=True)
 eta = 0.001
 iterations = 100
 
@@ -92,7 +92,7 @@ class NN(object):
 
 nn = NN(X.shape[1],Y.shape[1])
 optim_nn = LossMSE()
-trainer = Trainer(nn, optim_nn)
+trainer = Trainer(nn, optim_nn, v=True)
 
 eta = 0.001
 iterations = 100
@@ -169,7 +169,7 @@ class NN2(object):
 
 nn = NN2(X.shape[1],30,Y.shape[1])
 optim_nn = LossMSE()
-trainer = Trainer(nn, optim_nn)
+trainer = Trainer(nn, optim_nn, v=True)
 iterations = 200
 eta = 0.0001
 
@@ -195,7 +195,7 @@ nn_seq = Sequential(
 )
 
 optim_nn = LossMSE()
-trainer = Trainer(nn_seq, optim_nn)
+trainer = Trainer(nn_seq, optim_nn, v=True)
 iterations = 300
 eta = 0.0008
 nn_seq.modules
@@ -266,7 +266,7 @@ nn_test = Sequential(
 )
 
 optim_nn = LossMSE()
-trainer = Trainer(nn_test, optim_nn)
+trainer = Trainer(nn_test, optim_nn, v=True)
 iterations = 200
 eta = 0.00005
 batch_size = 50
