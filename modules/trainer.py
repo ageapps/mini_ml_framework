@@ -5,10 +5,12 @@ class Trainer(object):
     def __init__(self, model, optimizer, debug=False):
         self.model = model
         self.optimizer = optimizer
+        self.verbose = debug
         self.logger = LogManager.getLogger(__name__, debug)
 
     def debug(self, content):
-        self.logger.debug(content)
+        if self.verbose:
+            self.logger.debug(content)
     
     def info(self, content):
         self.logger.info(content)
@@ -37,9 +39,10 @@ class Trainer(object):
                 w = param[0]
                 dw = param[1]
                 new_w = w - eta*dw
-                self.debug('w:', w)
-                self.debug('dw:', dw)
-                self.debug('new_w:', new_w)
+                if self.verbose:
+                    self.debug('w:', w)
+                    self.debug('dw:', dw)
+                    self.debug('new_w:', new_w)
 
                 updates.append(new_w)            
 
@@ -47,7 +50,7 @@ class Trainer(object):
             
             if i%10==0:
                 self.info('Iter: {} Cost:{}'.format(i,cost_history[i]))
-            else:
+            elif self.verbose:
                 self.debug('Iter: {} Cost:{}'.format(i,cost_history[i]))
 
             
@@ -90,9 +93,10 @@ class Trainer(object):
                     w = param[0]
                     dw = param[1]
                     new_w = w - eta*dw
-                    self.debug('w:' + str(w))
-                    self.debug('dw:'+ str(dw))
-                    self.debug('new_w:' + str(new_w))
+                    if self.verbose:
+                        self.debug('w:' + str(w))
+                        self.debug('dw:'+ str(dw))
+                        self.debug('new_w:' + str(new_w))
                         
                     updates.append(new_w)  
                     
@@ -106,7 +110,7 @@ class Trainer(object):
             
             if i%10==0:
                 self.info('Iter: {} Cost:{}'.format(i,cost_history[i]))
-            else:
+            elif self.verbose:
                 self.debug('Iter: {} Cost:{}'.format(i,cost_history[i]))
 
         return cost_history
