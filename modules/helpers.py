@@ -13,7 +13,11 @@ def standardize(A):
 
 # In[14]
 
-def plotCostAndData(model,X,Y,cost, fig_name=False):
+def plotCostAndData(model,X,Y,cost, fig_name=False, title=False):
+        fig_title = 'Learning result'
+        if title:
+            fig_title = title
+        
         plotOutput = X.shape[1] == 1 and Y.shape[1] == 1
         
         if plotOutput:
@@ -21,7 +25,8 @@ def plotCostAndData(model,X,Y,cost, fig_name=False):
             cost_ax = ax[0]
         else:
             fig, cost_ax = plt.subplots(1, 1, figsize=(10, 8))
-
+        
+        fig.suptitle(fig_title)
         # Plot Cost
         cost_ax.set_ylabel('Cost')
         cost_ax.set_xlabel('Iterations')
