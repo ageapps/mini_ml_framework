@@ -43,6 +43,9 @@ def plotCostAndData(model,X,Y,cost, fig_name=False, title=False):
             ax[1].set_xlabel('X')
             ax[1].legend()
         if fig_name:
-            fig.savefig(fig_name+'.png')
+            fig_name += '.png'
+            fig.savefig(fig_name)
+            print('File saved in path: {}'.format(fig_name))
+
         else:
             plt.show()
