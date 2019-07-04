@@ -1,4 +1,5 @@
 import numpy as np
+import time
 from . import LogManager
 
 class Trainer(object):
@@ -19,15 +20,21 @@ class Trainer(object):
 
     def trainGD(self, X, Y, iterations, eta=0.01, update_func=None):
         cost_history = []
+        y_history= []
+        time_history= []
 
         self.info('Training model with params: ' + str(len(self.model.param())))
         self.debug('Params in model')
         self.debug(self.model.param())
+        start_time = time.time()
         for i in range(iterations):
             # forward pass, get prediction
             y_pred = self.model.forward(X)
             # calculate cost
             cost_history.append(self.optimizer.cost(y_pred,Y))
+            y_history.append(y_pred)
+            time_history.append(time.time() - start_time)
+            
             # update weights, backward prop
             updates = []
             dL_dy = self.optimizer.backward()
@@ -61,18 +68,21 @@ class Trainer(object):
 
             self.model.update(updates)
 
-        return cost_history
+        return cost_history, y_history, time_history
 
 
 
 
     def trainBatchGD(self, X, Y, iterations, batch_size=5, eta=0.01, update_func=None):
         cost_history = []
+        y_history= []
+        time_history= []
 
         self.info('Training model with params: ' + str(len(self.model.param())))
         self.debug('Params in model')
         self.debug(self.model.param())
-            
+        
+        start_time = time.time()
         for i in range(iterations):
             cost = 0.0
             for b in range(0,X.shape[0],batch_size):            
@@ -109,10 +119,12 @@ class Trainer(object):
                 updates = update_func(updates, i)
             self.model.update(updates)
             cost_history.append(cost)
-            
+            y_history.append(y_pred)
+            time_history.append(time.time() - start_time)
+
             if i%10==0:
                 self.info('Iter: {} Cost:{}'.format(i,cost_history[i]))
             elif self.vv:
                 self.debug('Iter: {} Cost:{}'.format(i,cost_history[i]))
 
-        return cost_history
+        return cost_history, y_history, time_history
