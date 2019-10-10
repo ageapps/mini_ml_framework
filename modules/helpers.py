@@ -38,7 +38,7 @@ def plotCostAndData(model,X,Y,cost, fig_name=False, title=False):
             # Plot original data
             _ = ax[1].plot(X, Y, 'b.', label="Input")
             # Plot regression line
-            _ = ax[1].plot(X, pred, 'r.', label="Prediction")
+            _ = ax[1].plot(X, pred, 'r-', label="Prediction")
             ax[1].set_ylabel('Y')
             ax[1].set_xlabel('X')
             ax[1].legend()
